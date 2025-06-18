@@ -1,15 +1,17 @@
-name: Generate Snake
+name: Generate Snake Animation
 
 on:
+  # Génère tous les jours à minuit
   schedule:
-    - cron: "0 0 * * *" # Génère tous les jours
+    - cron: "0 0 * * *"
+  # Permet de déclencher manuellement
   workflow_dispatch:
 
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Generate Snake Animation
@@ -19,10 +21,15 @@ jobs:
           outputs: |
             dist/github-contribution-grid-snake.svg
 
-      - name: Push to GitHub
+      - name: Push the generated animation
         uses: EndBug/add-and-commit@v9
         with:
           author_name: github-actions
           author_email: github-actions@github.com
-          message: "Generate Snake Contribution"
+          message: "Update Snake Animation"
           add: "dist/github-contribution-grid-snake.svg"
+
+      - name: Push to GitHub
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions@github.com"

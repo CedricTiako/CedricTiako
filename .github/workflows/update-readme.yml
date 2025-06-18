@@ -2,30 +2,37 @@ name: Update GitHub Profile README
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # tous les jours à minuit UTC
+    - cron: '0 0 * * *'  # Run daily at midnight UTC
   push:
     branches:
       - main
+  workflow_dispatch:  # Allow manual triggering
+
+# Set the permissions for the GITHUB_TOKEN
+permissions:
+  contents: write  # Required to push changes
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Fetch all history for all branches and tags
+          token: ${{ secrets.GITHUB_TOKEN }}  # Use the default GITHUB_TOKEN
       
       - name: Verify README exists
         id: check_readme
         run: |
           if [ ! -f "README.md" ]; then
             echo "README.md not found in the root directory"
-            echo "::set-output name=exists::false"
+            echo "exists=false" >> $GITHUB_OUTPUT
             exit 1
           else
             echo "README.md found"
-            echo "::set-output name=exists::true"
+            echo "exists=true" >> $GITHUB_OUTPUT
           fi
       
       - name: Update stats
@@ -43,7 +50,11 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git add README.md
+          
+          # Check for changes and commit if needed
           git diff --quiet && git diff --staged --quiet || \
-            (git commit -m "Update README stats [skip ci]" && git push) || \
+            (git commit -m "Update README stats [skip ci]" && \
+             git push origin main) || \
             echo "No changes to commit"

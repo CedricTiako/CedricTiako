@@ -1,0 +1,28 @@
+name: Update GitHub Profile README
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # tous les jours à minuit UTC
+  push:
+    branches:
+      - main
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Update stats
+        run: |
+          echo "Mettre ici la commande ou le script qui génère les stats"
+          # Par exemple, appeler un script nodejs qui régénère README.md
+      
+      - name: Commit and Push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "Update README stats" || echo "No changes to commit"
+          git push

@@ -22,13 +22,19 @@ jobs:
       - name: Update stats
         run: |
           DATE=$(date -u)
+          MARKER="<!-- LAST_UPDATED_MARKER -->"
 
-          if grep -q "Last updated:" README.md; then
-            sed -i "s/Last updated:.*/Last updated: $DATE -->/" README.md
-          else
+          # Remove all old timestamp markers and add new one
+          sed -i '/<!-- Last updated:/d' README.md
+
+          # Ensure marker exists
+          if ! grep -q "$MARKER" README.md; then
             echo "" >> README.md
-            echo "<!-- Last updated: $DATE -->" >> README.md
+            echo "$MARKER" >> README.md
           fi
+
+          # Replace marker with new timestamp
+          sed -i "s|$MARKER|<!-- Last updated: $DATE -->|" README.md
 
       - name: Commit changes
         run: |

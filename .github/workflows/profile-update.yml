@@ -2,27 +2,24 @@ name: Mise à jour profil GitHub
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # tous les jours à minuit UTC
-  push:
-    branches:
-      - main
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 
 jobs:
-  update-readme:
+  generate:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Snake animation contributions
-        uses: Platane/snk@v0.2.0
+      - name: Generate snake
+        uses: platane/snk@v3
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          github_user_name: TON_USERNAME
+          outputs: dist/github-contribution-grid-snake.svg
 
-      - name: Commit des changements
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Update contribution snake animation" || echo "Pas de changement"
-          git push
+      - name: Push snake animation
+        uses: crazy-max/ghaction-github-pages@v3
+        with:
+          target_branch: output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

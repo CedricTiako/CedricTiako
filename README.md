@@ -271,4 +271,4 @@ Ouvert à :
 
 ---
 
-<!-- LAST_UPDATED_MARKER -->
+<!-- Last updated: Wed May  6 08:00:53 UTC 2026 -->
